@@ -1,5 +1,10 @@
-all:comp
-comp:
+all:comp_gcc
+comp_gcc:
 	gcc -c main.c
-	gcc -o lab2 main.o
+	gcc -o lab1 main.o
 	rm main.o
+comp_clang:
+	clang -c main.c
+	clang -o lab1 main.o
+	rm main.o
+
