@@ -27,11 +27,12 @@ int main(){
         }
 
         while(1)
-				{	
-						if(strcmp("end",addr)==0) break;
-      	    sleep (1);
-						printf("%s", addr);
-				}
+	{	
+		if(strcmp("end",addr)==0) break;
+		sleep (1);
+		printf("%s", addr);
+	}
+	shmdt(addr);
 
         return 0;
 }
