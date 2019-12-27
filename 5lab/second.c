@@ -16,7 +16,7 @@ struct sembuf sem_lock = {0,-1,0}, sem_open = {0,1,0};
 int main(){
         
 	key_t key = ftok(FILE, 1);
-	int smid = shmget(key, 32, 0666);
+	int shmid = shmget(key, 32, 0666);
 	if (smid == -1)
 	{
 		perror("SHMEM CREATE FAILED\n");
@@ -28,7 +28,7 @@ int main(){
 		printf ("SEMAPHORE CREATE FAILED\n");
 		return 0;
 	}
-	char* addr = shmat(smid, NULL, 0);
+	char* addr = shmat(shmid, NULL, 0);
 	if (addr == (char*)-1)
 	{
 		perror("SHMAT FAILED\n");
