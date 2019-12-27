@@ -10,13 +10,14 @@
 #include <sys/sem.h>
 
 #define FILE "shmemochka"
+#define buffer_size 52
 
 struct sembuf sem_lock = {0,-1,0}, sem_open = {0,1,0};
 
 int main(){
 
 	key_t key = ftok(FILE, 1);
-	int smid = shmget(key, 32, IPC_CREAT|0666);
+	int shmid = shmget(key, buffer_size, IPC_CREAT|0666);
 	if (smid == -1)
 	{
 		perror("SHMEM CREATE FAILED\n");
@@ -27,7 +28,7 @@ int main(){
 		printf ("SEMAPHORE CREATE FAILED\n");
 		return 0;
 	}
-	char* addr = shmat(smid, NULL, 0);
+	char* addr = shmat(shmid, NULL, 0);
 	if (addr == (char*)-1)
 	{
 		perror("SHMAT FAILED\n");
@@ -44,9 +45,9 @@ int main(){
 		semop(semid,&sem_open,1);
 	}
 	sprintf(addr,"end");
-	semctl(smid,0,IPC_RMID);
+	semctl(semid,0,IPC_RMID);
 	shmdt(addr);
-	shmctl(smid,IPC_RMID,NULL);
+	shmctl(shmid,IPC_RMID,NULL);
 
 	return 0;
 }
