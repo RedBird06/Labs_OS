@@ -14,7 +14,7 @@ pthread_rwlock_t lock;
 
 void* thread_func()
 {
-	key_t key = ftok(FILE, 1);
+	key_t key = ftok(file_name, 1);
 	int shmid = shmget(key, buffer_size, 0666);
 	if (shmid == -1)
 	{
@@ -49,7 +49,7 @@ int main()
 	FILE* file;
 	if((file = fopen(file_name,"w"))!=NULL)fclose(file);
 	
-	key_t key = ftok(FILE, 1);
+	key_t key = ftok(file_name, 1);
 	int shmid = shmget(key, buffer_size, IPC_CREAT|0666);
 	if (shmid == -1)
 	{
