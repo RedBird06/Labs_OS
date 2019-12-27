@@ -7,7 +7,7 @@
 #include <pthread.h>
 #include <sys/shm.h>
 
-#define FILE "shmemochka"
+#define file_name "shmemochka"
 #define buffer_size 52
 
 pthread_cond_t cond;
@@ -42,12 +42,14 @@ void* thread_func()
 
 int main()
 {
-	
 	pthread_t pth[10];
 	pthread_mutex_init(&mutex, NULL);
 	
 	int i;
 	int counter;
+	
+	FILE* file;
+	if((file = fopen(file_name,"w"))!=NULL)fclose(file);
 	
 	key_t key = ftok(FILE, 1);
 	int shmid = shmget(key, buffer_size, IPC_CREAT|0666);
