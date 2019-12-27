@@ -8,28 +8,29 @@
 #include <sys/shm.h>
 
 #define FILE "shmemochka"
+#define buffer_size 52
 
 pthread_rwlock_t lock;
 
 void* thread_func()
 {
 	key_t key = ftok(FILE, 1);
-	int smid = shmget(key, 32, 0666);
-	if (smid == -1)
+	int shmid = shmget(key, buffer_size, 0666);
+	if (shmid == -1)
 	{
-		perror("SHMEM CREATE FAILED\n");
+		perror("THREAD SHMEM CREATE FAILED\n");
 		return 0;
 	}
-	char* addr = shmat(smid, NULL, 0);
+	char* addr = shmat(shmid, NULL, 0);
 	if (addr == (char*)-1){
-		printf ("SHMAT FAILED\n");
+		printf ("THREAD SHMAT FAILED\n");
 		return 0;
 	}
-	sleep(1);
-	while (1){
-        pthread_rwlock_wrlock(&lock);
+	while (1)
+	{
+    pthread_rwlock_rdlock(&lock);
 		printf("TID: %ld Say:%s",pthread_self(),addr);
-        pthread_rwlock_unlock(&lock);;
+    pthread_rwlock_unlock(&lock);;
 		sleep (1);
 	}
 	return 0;
@@ -42,27 +43,29 @@ int main()
 	pthread_rwlock_init(&lock,NULL);
 	
 	int i;
-	int counter;
+	int counter = -1;
 	
 	key_t key = ftok(FILE, 1);
-	int smid = shmget(key, 32, IPC_CREAT|0666);
-	if (smid == -1)
+	int shmid = shmget(key, buffer_size, IPC_CREAT|0666);
+	if (shmid == -1)
 	{
 		perror("SHMEM CREATE FAILED\n");
 		return 0;
 	}
 	
-	char* addr = shmat(smid, NULL, 0);
+	char* addr = shmat(shmid, NULL, 0);
 	if (addr == (char*)-1){
 		printf ("SHMAT FAILED\n");
 		return 0;
 	}
 	
+	sprintf(addr, "%d\n", counter);
+
 	for(i=0;i<10;++i)
 	{
 		int stat = pthread_create(&pth[i], NULL, thread_func, NULL);
 		if (stat != 0){
-			printf ("%d thread create fialed\n", stat);
+			printf ("%d THREAD CREATE FAILED\n", stat);
 			return 0;
 		}
 	}
@@ -70,14 +73,14 @@ int main()
 	for(counter=0;counter<12;counter++)
 	{
 		sleep(1);
-		pthread_rwlock_rdlock(&lock);
+		pthread_rwlock_wrlock(&lock);
 		sprintf(addr, "%d\n", counter);
 		pthread_rwlock_unlock(&lock);
 	}
 
 	pthread_rwlock_destroy(&lock);
 	shmdt(addr);
-	shmctl(smid,IPC_RMID,NULL);
+	shmctl(shmid,IPC_RMID,NULL);
 	
 	return 0;
 }
