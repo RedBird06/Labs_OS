@@ -8,28 +8,30 @@
 #include <sys/shm.h>
 
 #define FILE "shmemochka"
+#define buffer_size 52
 
 pthread_mutex_t mutex;
 
 void* thread_func()
 {
 	key_t key = ftok(FILE, 1);
-	int smid = shmget(key, 32, 0666);
+	int shmid = shmget(key, buffer_size, 0666);
 	if (smid == -1)
 	{
 		perror("SHMEM CREATE FAILED\n");
 		return 0;
 	}
-	char* addr = shmat(smid, NULL, 0);
+	char* addr = shmat(shmid, NULL, 0);
 	if (addr == (char*)-1){
 		printf ("SHMAT FAILED\n");
 		return 0;
 	}
 	sleep(1);
-	while (1){
-        pthread_mutex_lock(&mutex);
+	while (1)
+	{
+        	pthread_mutex_lock(&mutex);
 		printf("TID: %ld Say:%s",pthread_self(),addr);
-        pthread_mutex_unlock(&mutex);
+        	pthread_mutex_unlock(&mutex);
 		sleep (1);
 	}
 	return 0;
@@ -43,14 +45,14 @@ int main()
 	int counter;
 	pthread_mutex_init(&mutex, NULL);
 	key_t key = ftok(FILE, 1);
-	int smid = shmget(key, 32, IPC_CREAT|0666);
-	if (smid == -1)
+	int shmid = shmget(key, 32, IPC_CREAT|0666);
+	if (shmid == -1)
 	{
 		perror("SHMEM CREATE FAILED\n");
 		return 0;
 	}
 	
-	char* addr = shmat(smid, NULL, 0);
+	char* addr = shmat(shmid, NULL, 0);
 	if (addr == (char*)-1){
 		printf ("SHMAT FAILED\n");
 		return 0;
@@ -75,7 +77,7 @@ int main()
 
 	pthread_mutex_destroy(&mutex);
 	shmdt(addr);
-	shmctl(smid,IPC_RMID,NULL);
+	shmctl(shmid,IPC_RMID,NULL);
 	
 	return 0;
 }
