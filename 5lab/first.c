@@ -9,13 +9,16 @@
 #include <string.h>
 #include <sys/sem.h>
 
-#define FILE "shmemochka"
+#define file_name "shmemochka"
 #define buffer_size 52
 
 struct sembuf sem_lock = {0,-1,0}, sem_open = {0,1,0};
 
 int main(){
 
+	FILE* file;
+	if((file = fopen(file_name,"w"))!=NULL)fclose(file);
+	
 	key_t key = ftok(FILE, 1);
 	int shmid = shmget(key, buffer_size, IPC_CREAT|0666);
 	if (shmid == -1)
