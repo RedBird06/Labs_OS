@@ -7,7 +7,7 @@
 #include <pthread.h>
 #include <sys/shm.h>
 
-#define FILE "shmemochka"
+#define file_name "shmemochka"
 #define buffer_size 52
 
 pthread_rwlock_t lock;
@@ -45,6 +45,9 @@ int main()
 	
 	int i;
 	int counter = -1;
+	
+	FILE* file;
+	if((file = fopen(file_name,"w"))!=NULL)fclose(file);
 	
 	key_t key = ftok(FILE, 1);
 	int shmid = shmget(key, buffer_size, IPC_CREAT|0666);
