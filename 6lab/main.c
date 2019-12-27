@@ -29,11 +29,13 @@ void* thread_func()
 	}
 	while (1)
 	{
-    pthread_mutex_lock(&mutex);
+    		pthread_mutex_lock(&mutex);
 		printf("TID: %ld Say:%s",pthread_self(),addr);
-    pthread_mutex_unlock(&mutex);
+    		pthread_mutex_unlock(&mutex);
 		sleep(1);
 	}
+	
+	shmdt(addr);
 	return 0;
 }
 
