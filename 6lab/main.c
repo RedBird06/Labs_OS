@@ -7,14 +7,14 @@
 #include <pthread.h>
 #include <sys/shm.h>
 
-#define FILE "shmemochka"
+#define file_name "shmemochka"
 #define buffer_size 52
 
 pthread_mutex_t mutex;
 
 void* thread_func()
 {
-	key_t key = ftok(FILE, 1);
+	key_t key = ftok(file_name, 1);
 	int shmid = shmget(key, buffer_size, 0666);
 	if (shmid == -1)
 	{
@@ -29,23 +29,24 @@ void* thread_func()
 	}
 	while (1)
 	{
-    		pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&mutex);
 		printf("TID: %ld Say:%s",pthread_self(),addr);
-    		pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mutex);
 		sleep(1);
 	}
-	
 	shmdt(addr);
 	return 0;
 }
 
 int main()
 {
+	FILE* file;
+	if((file = fopen(file_name,"w"))!=NULL)fclose(file);
 	pthread_t pth[10];
 	int i;
 	int counter = -1;
 	pthread_mutex_init(&mutex, NULL);
-	key_t key = ftok(FILE, 1);
+	key_t key = ftok(file_name, 1);
 	int shmid = shmget(key, buffer_size, IPC_CREAT|0666);
 	if (shmid == -1)
 	{
