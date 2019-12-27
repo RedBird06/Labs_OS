@@ -18,7 +18,7 @@ int main(){
 
 	key_t key = ftok(FILE, 1);
 	int shmid = shmget(key, buffer_size, IPC_CREAT|0666);
-	if (smid == -1)
+	if (shmid == -1)
 	{
 		perror("SHMEM CREATE FAILED\n");
 		return 0;
@@ -37,11 +37,10 @@ int main(){
 	semop(semid,&sem_open,1);
 	for(int i = 0;i<25;++i)
 	{
-		sleep(1);
 		semop(semid,&sem_lock,1);
 		time_t tt = time(0);
 		sprintf(addr, "pid: %d time: %s",getpid() ,ctime(&tt));
-		sleep(2);
+		sleep(1);
 		semop(semid,&sem_open,1);
 	}
 	sprintf(addr,"end");

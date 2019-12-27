@@ -10,14 +10,15 @@
 #include <sys/sem.h>
 
 #define FILE "shmemochka"
+#define buffer_size 52
 
 struct sembuf sem_lock = {0,-1,0}, sem_open = {0,1,0};
 
 int main(){
         
 	key_t key = ftok(FILE, 1);
-	int shmid = shmget(key, 32, 0666);
-	if (smid == -1)
+	int shmid = shmget(key, buffer_size, 0666);
+	if (shmid == -1)
 	{
 		perror("SHMEM CREATE FAILED\n");
 		return 0;
