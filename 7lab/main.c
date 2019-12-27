@@ -28,11 +28,12 @@ void* thread_func()
 	}
 	while (1)
 	{
-    pthread_rwlock_rdlock(&lock);
+    		pthread_rwlock_rdlock(&lock);
 		printf("TID: %ld Say:%s",pthread_self(),addr);
-    pthread_rwlock_unlock(&lock);;
+    		pthread_rwlock_unlock(&lock);;
 		sleep (1);
 	}
+	shmdt(addr);
 	return 0;
 }
 
